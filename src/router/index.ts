@@ -144,6 +144,21 @@ export const constantRoutes: RouteConfig[] = [
 */
 export const asyncRoutes: RouteConfig[] = [
   {
+    path: '/wizardDemo',
+    component: Layout,
+    children: [
+      {
+        path: 'index',
+        component: () => import(/* webpackChunkName: "tab" */ '@/views/wizardDemo/index.vue'),
+        name: 'wizardDemo',
+        meta: {
+          title: 'demo',
+          icon: 'lock'
+        }
+      }
+    ]
+  },
+  {
     path: '/permission',
     component: Layout,
     redirect: '/permission/directive',

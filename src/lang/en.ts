@@ -42,6 +42,7 @@ export default {
     inlineEditTable: 'Inline Edit Table',
     complexTable: 'Complex Table',
     tab: 'Tab',
+    demo: 'Demo',
     form: 'Form',
     createArticle: 'Create Article',
     editArticle: 'Edit Article',

@@ -42,6 +42,7 @@ export default {
     inlineEditTable: 'Editor',
     complexTable: 'Complex Table',
     tab: 'Pestaña',
+    demo: 'Demo',
     form: 'Formulario',
     createArticle: 'Crear artículo',
     editArticle: 'Editar artículo',

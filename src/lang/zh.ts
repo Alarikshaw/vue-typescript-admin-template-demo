@@ -42,6 +42,7 @@ export default {
     inlineEditTable: '表格内编辑',
     complexTable: '综合表格',
     tab: '分栏',
+    demo: '向导Demo',
     form: '表单',
     createArticle: '创建文章',
     editArticle: '编辑文章',
