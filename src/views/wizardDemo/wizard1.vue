@@ -46,16 +46,37 @@
         </ul>
       </div>
       <!-- 右边组件 -->
-      <div class="wizard-content">
+      <div class="wizard-content" v-if="!isView">
         <component
+        :isView="!isView"
           :is="item.component"
           v-for="(item, index) in currentStep"
           :ref="item.component"
           :key="index"
           :is-save="isSave"
+          :prjData="prjData"
           @sucSave="sucSave"
         />
       </div>
+      <div class="wizard-content" v-else>
+        <component
+        :isView="!isView"
+          :is="item.component"
+          v-for="(item, index) in currentStep"
+          :ref="item.component"
+          :key="index"
+          :prjData="prjData"
+        />
+      </div>
+    </div>
+    <div class="footer">
+        <el-button 
+          v-for="(item, index) in footerButtons" 
+            :key="index"
+            :type="item.type"
+            :disabled="item.disabled"
+            @click="buttonKey(item.key)"
+          >{{ item.name }}</el-button>
     </div>
   </div>
 </template>
@@ -72,6 +93,38 @@ interface SaveCallback {
   name: 'wizard'
 })
 export default class extends Vue {
+  protected footerButtons: Array<any> = [
+    {
+        key: 'prevBtn',
+        name: '上一步',
+        type: 'primary',
+        disabled: false
+    },
+    {
+        key: 'nextBtn',
+        name: '下一步',
+        type: 'primary',
+        disabled: false
+    },
+    {
+        key: 'saveBtn',
+        name: '保存',
+        type: 'primary',
+        disabled: false
+    },
+    {
+        key: 'finishBtn',
+        name: '完成',
+        type: 'success',
+        disabled: true
+    },
+    {
+        key: 'closeBtn',
+        name: '关闭',
+        type: 'plain',
+        disabled: false
+    },
+  ];
   /**
    * 当前项目数据
    */
@@ -111,6 +164,12 @@ export default class extends Vue {
    * 清空临时key
    */
   protected temporaryKey: string = '';
+
+  /** 
+   * 通览模式
+   * (同时子向导不可编辑状态 isCanEdit)
+   */
+  protected isView: Boolean = false;
   /**
    * 初始化
    * Vue 声明周期
@@ -119,6 +178,40 @@ export default class extends Vue {
     // 传入假数据
     this.initData(ajaxData)
     console.log('moduleData', moduleData)
+  };
+  /**
+   * 点击button
+   * @param key
+   */
+  buttonKey(key: string) {
+    switch (key) {
+      case 'prevBtn':
+        console.log('上一步', key);
+        this.doPrev();
+        break;
+      case 'nextBtn':
+        console.log('下一步', key);
+        this.doNext()
+        break;
+      case 'saveBtn':
+        console.log('保存', key);
+        this.isSave = true
+        // 触发保存
+        // this.$message({
+        //   message: '保存成功',
+        //   type: 'success'
+        // })
+        // this.$emit('closeParent', key)
+        break;
+      case 'closeBtn':
+        console.log('关闭', key);
+        this.$emit('closeParent', key)
+        break;
+      case 'finishBtn':
+        console.log('完成', key);
+        this.$emit('closeParent', key)
+        break;
+    }
   }
   /**
      * 初始化
@@ -260,7 +353,7 @@ export default class extends Vue {
     }
   }
   /**
-   * 点击前往下一步
+   * 点击前往另一个步骤
    */
   goStep(key: any) {
     if (this.currentStepKey === key) { // 如果相同 则无需更换步骤
@@ -274,7 +367,7 @@ export default class extends Vue {
       // 走保存接口
       this.currentStep.map((item: any) => {
         console.log('item', item)
-        if (item.component === 'PmBaseWizardPreviewPro') {
+        if (item.component === 'PmBaseWizardPreviewPro') { // 通览模式
           this.doShowStep(key)
           return
         }
@@ -328,6 +421,45 @@ export default class extends Vue {
     if (!tab) {
       return false
     }
+    // 显示或隐藏按钮
+    // 显示影藏对应的按钮
+    console.log('是否为最后一个步骤', this.isLastStep(key))
+    if (this.isLastStep(key)) {
+      this.footerButtons.map((item: any) =>{
+          if (item.key === 'nextBtn') {
+            item.disabled = true
+          }
+          this.allFinished = true;
+      })
+    } else {
+      this.footerButtons.map((item: any) =>{
+          if (item.key === 'nextBtn') {
+            item.disabled = false
+          }
+      })
+    }
+
+    if (this.isFirstStep(key)) {
+      this.footerButtons.map((item: any) =>{
+        if (item.key === 'prevBtn') {
+          item.disabled = true
+        }
+      })
+    } else {
+        this.footerButtons.map((item: any) =>{
+          if (item.key === 'prevBtn') {
+            item.disabled = false
+          }
+        })
+    }
+    if (this.allFinished) {
+        this.footerButtons.map((item: any) =>{
+          if (item.key === 'finishBtn') {
+            item.disabled = false
+          }
+        })
+    }
+    
     // 切换步骤
     this.currentGroupKey = tab.group || tab.key
     this.currentStepKey = tab.key
@@ -346,7 +478,14 @@ export default class extends Vue {
   doSwitch() {
     this.stepInfos.map((item: any) => {
       if (item.id === this.currentStepKey) {
-        this.currentStep = [item]
+        if (item.component === 'PmBaseWizardPreviewPro') {
+          this.currentStep = this.stepInfos
+          this.isView = true
+        } else {
+          this.currentStep = [item]
+          this.isView = false
+        }
+        
       }
     })
     console.log(this.currentStep[0].component)
@@ -355,26 +494,87 @@ export default class extends Vue {
   /**
    * 保存当前步骤
    */
-  saveCurrentProgress() {}
+  saveCurrentProgress() {};
+  /**
+   * 点击上一步
+   */
+  protected doPrev() {
+    let prevTab = null;
+    for (let tab of this.stepTabs) {
+        if (tab.children) {
+            for (let child of tab.children) {
+                if (child.key === this.currentStepKey) {
+                    if (prevTab) {
+                        this.goStep(prevTab.key);
+                    }
+                    return;
+                }
+                prevTab = child;
+            }
+        } else {
+            if (tab.key === this.currentStepKey) {
+                if (prevTab) {
+                    this.goStep(prevTab.key);
+                }
+                return;
+            }
+            prevTab = tab;
+        }
+    }
+  }
+  /**
+   * 点击下一步骤
+   */
+  protected doNext() {
+    let flag = false;
+    for (let tab of this.stepTabs) {
+        if (tab.children) {
+            for (let child of tab.children) {
+                if (flag) {
+                    this.goStep(child.key);
+                    return;
+                } else if (child.key === this.currentStepKey) {
+                    flag = true;
+                }
+            }
+        } else {
+            if (flag) {
+                this.goStep(tab.key);
+                return;
+            } else if (tab.key === this.currentStepKey) {
+                flag = true;
+            }
+        }
+    }
+    }
 }
 </script>
 
 <style lang="scss" scoped>
+.el-dialog__wrapper > .el-dialog {
+      margin: 0 auto 1px;
+}
 .wizard {
     height: 100%;
-    display: flex;
-    padding-bottom: 18vh;
+    padding-bottom: 1%;
     .wizard-top {
       display: flex;
     }
   > .tab-content, > .tab-content > .tab-pane {
     height: 100%;
   }
-
+  .footer {
+    text-align: right;
+    margin-top: 8%;
+  }
+  .wizard-content {
+    width: 75%;
+  }
   .pm-base-wizard-sidebar {
     margin: 0 5px;
     padding: 0px 5px;
-    width: 215px;
+    width: 25%;
+    min-width: 215px;
 
     ul.pm-base-wizard-steps {
       padding-left: 0;

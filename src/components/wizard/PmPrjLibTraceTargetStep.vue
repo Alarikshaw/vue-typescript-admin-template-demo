@@ -6,7 +6,7 @@
 <script lang="ts">
 import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 @Component({
-  name: 'PmPrjLibBasisStep'
+  name: 'PmPrjLibTraceTargetStep'
 })
 export default class extends Vue {
   @Prop({ default: false }) private isSave!: boolean // 是否开始保存
@@ -17,6 +17,7 @@ export default class extends Vue {
    */
   @Watch('isSave')
   private onValueChange(value: Boolean) {
+    console.log('asd', value)
     console.log('watch value', value)
     if (value) {
       this.save()

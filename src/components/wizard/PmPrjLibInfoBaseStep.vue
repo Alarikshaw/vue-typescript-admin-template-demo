@@ -1,6 +1,9 @@
 <template>
   <div class="demo">
     基本信息
+    <div>
+      是否可编辑状态：{{ isView }}
+    </div>
   </div>
 </template>
 <script lang="ts">
@@ -10,7 +13,7 @@ import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 })
 export default class extends Vue {
   @Prop({ default: false }) private isSave!: boolean // 是否开始保存
-
+  @Prop({ default: true }) private isView!: boolean // 是否可编辑
   /**
    * 监听是否开始保存
    * @param isSave
