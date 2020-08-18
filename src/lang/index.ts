@@ -42,9 +42,13 @@ export const getLocale = () => {
     return cookieLanguage
   }
 
-  const language = navigator.language.toLowerCase()
+  const language = navigator.language
   const locales = Object.keys(messages)
   for (const locale of locales) {
+    console.log('language', language)
+    if (!language) {
+      return locale
+    }
     if (language.indexOf(locale) > -1) {
       return locale
     }
