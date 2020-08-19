@@ -1,53 +1,43 @@
 <template>
   <div class="demo">
-    立项依据
+    立项依据 FormDemo
+    <div>
+      是否可编辑状态：{{ isView }}
+    </div>
+    <div>继承：{{ isView }}</div>
+    <Form
+      :ui-code="uiCode"
+    />
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+import { Component, Vue, Watch, Prop, Mixins } from 'vue-property-decorator'
+import WizardStepVModel from '@/views/wizardDemo/WizardStepVModel'
+import Form from '@/components/from/formDemo.vue'
 @Component({
-  name: 'PmPrjLibBasisStep'
+  name: 'PmPrjLibBasisStep',
+  components: {
+    Form
+  }
 })
-export default class extends Vue {
-  @Prop({ default: false }) private isSave!: boolean // 是否开始保存
-  @Prop({
-    type: Object, // 数据类型
-    required: true, // 是否必填
-    default: {}, // 默认值
-  }) protected prjData!: Object
-
+export default class extends Mixins(WizardStepVModel) {
+  protected uiCode: string = 'special_funds_general_step_form';
   /**
-   * 初始化
-   * Vue 声明周期
-   */
-  created() {
-    // 传入假数据
-    this.initData(this.prjData)
-    console.log('moduleData', this.prjData)
-  };
-  /** 
-   * 初始化数据
-   */
-  protected initData(prjData: Object) {
-
-  }
-  /**
-   * 监听是否开始保存
-   * @param isSave
-   */
-  @Watch('isSave')
-  private onValueChange(value: Boolean) {
-    console.log('watch value', value)
-    if (value) {
-      this.save()
-    }
-  }
+     * 自动触发 保存方法
+     */
   save() {
     let param = {
       status: true,
       message: '恭喜你，这次保存成功'
     }
     this.$emit('sucSave', param)
+  }
+  created() {
+    // 传入假数据
+    this.doInIt(this.prjData)
+  }
+  doInIt(data: any) {
+    console.log('初始化', data)
   }
 }
 </script>

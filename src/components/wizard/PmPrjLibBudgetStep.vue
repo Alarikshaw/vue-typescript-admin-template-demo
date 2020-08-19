@@ -1,6 +1,6 @@
 <template>
   <div class="demo">
-    项目预算
+    项目预算1
   </div>
 </template>
 <script lang="ts">
@@ -28,6 +28,9 @@ export default class extends Vue {
       message: '恭喜你，这次保存成功'
     }
     this.$emit('sucSave', param)
+  }
+  doInIt(data: any) {
+    console.log('项目预算', data)
   }
 }
 </script>

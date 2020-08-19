@@ -240,7 +240,7 @@ export const Conponents = [
     'visibleFilter': null
   }
 ]
-export function conversion(str) {
+export function conversion(str: any) {
   var arr = str.split('-')
   var len = arr.length
   for (var i = 0; i < len; i++) {

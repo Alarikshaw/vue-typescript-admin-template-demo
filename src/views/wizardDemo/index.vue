@@ -14,8 +14,8 @@
       :close-on-press-escape="true"
       :before-close="handleClose"
     >
-      <wizard 
-      @closeParent="closeParent"
+      <wizard
+        @closeParent="closeParent"
       />
       <span
         slot="footer"
@@ -47,9 +47,9 @@ export default class extends Vue {
     }
 
     /**
-     * 向导回调 
-     * 根据key的值进行具体的回调 
-     * @param key 
+     * 向导回调
+     * 根据key的值进行具体的回调
+     * @param key
      */
     protected closeParent(key: string) {
       console.log('保存KBKBKB/', key)
@@ -60,8 +60,8 @@ export default class extends Vue {
         this.finishCallback()
       } else {
         this.prompt(key)
-      } 
-    };
+      }
+    }
     /**
      * 完成回调
      */
@@ -72,32 +72,32 @@ export default class extends Vue {
       })
       this.isWizard = false
       this.$confirm('是否上报', '确认信息', {
-          distinguishCancelAndClose: true,
-          confirmButtonText: '上报',
-          cancelButtonText: '取消'
+        distinguishCancelAndClose: true,
+        confirmButtonText: '上报',
+        cancelButtonText: '取消'
+      })
+        .then((e) => { // 点击上报确定执行方法
+          console.log('e', e)
         })
-          .then((e) => { // 点击上报确定执行方法
-            console.log('e', e)
-          })
-          .catch(action => { // 点击取消执行方法
-            console.log('action', action)
-          })
+        .catch(action => { // 点击取消执行方法
+          console.log('action', action)
+        })
     }
     /**
      * 提示
      */
     prompt(key: string) {
       this.$confirm('确认关闭？', '确认信息', {
-          distinguishCancelAndClose: true,
-          confirmButtonText: '关闭',
-          cancelButtonText: '取消'
+        distinguishCancelAndClose: true,
+        confirmButtonText: '关闭',
+        cancelButtonText: '取消'
+      })
+        .then(() => {
+          this.isWizard = false
+          console.log('回调key', key)
         })
-          .then(() => {
-            this.isWizard = false
-            console.log('回调key', key)
-          })
-          .catch(action => {
-          })
+        .catch(action => {
+        })
     }
     handleClose(done: any) {
       this.$confirm('确认关闭？', '确认信息', {

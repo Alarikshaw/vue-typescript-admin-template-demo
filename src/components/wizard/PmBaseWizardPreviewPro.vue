@@ -14,7 +14,5 @@ import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
 })
 export default class extends Vue {
   @Prop({ default: true }) private isView!: boolean // 是否可编辑
-  
 }
 </script>
-

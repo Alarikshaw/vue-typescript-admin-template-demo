@@ -4,33 +4,32 @@
     <div>
       是否可编辑状态：{{ isView }}
     </div>
+    <div>继承：{{ isView }}</div>
   </div>
 </template>
 <script lang="ts">
-import { Component, Vue, Watch, Prop } from 'vue-property-decorator'
+import { Component, Vue, Watch, Prop, Mixins } from 'vue-property-decorator'
+import WizardStepVModel from '@/views/wizardDemo/WizardStepVModel'
 @Component({
   name: 'PmPrjLibBasisStep'
 })
-export default class extends Vue {
-  @Prop({ default: false }) private isSave!: boolean // 是否开始保存
-  @Prop({ default: true }) private isView!: boolean // 是否可编辑
+export default class extends Mixins(WizardStepVModel) {
   /**
-   * 监听是否开始保存
-   * @param isSave
-   */
-  @Watch('isSave')
-  private onValueChange(value: Boolean) {
-    console.log('watch value', value)
-    if (value) {
-      this.save()
-    }
-  }
+     * 自动触发 保存方法
+     */
   save() {
     let param = {
       status: true,
       message: '恭喜你，这次保存成功'
     }
     this.$emit('sucSave', param)
+  }
+  created() {
+    // 传入假数据
+    this.doInIt(this.prjData)
+  }
+  doInIt(data: any) {
+    console.log('初始化', data)
   }
 }
 </script>

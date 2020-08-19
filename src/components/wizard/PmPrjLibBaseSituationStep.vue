@@ -32,5 +32,8 @@ export default class extends Vue {
     }
     this.$emit('sucSave', param)
   }
+  doInIt(data: any) {
+    console.log('基本情况', data)
+  }
 }
 </script>

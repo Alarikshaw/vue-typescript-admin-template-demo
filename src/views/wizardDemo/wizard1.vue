@@ -46,84 +46,93 @@
         </ul>
       </div>
       <!-- 右边组件 -->
-      <div class="wizard-content" v-if="!isView">
+      <div
+        v-if="!isView"
+        class="wizard-content"
+      >
         <component
-        :isView="!isView"
           :is="item.component"
           v-for="(item, index) in currentStep"
           :ref="item.component"
           :key="index"
+          :is-view="!isView"
           :is-save="isSave"
-          :prjData="prjData"
+          :prj-data="prjData"
           @sucSave="sucSave"
         />
       </div>
-      <div class="wizard-content" v-else>
+      <div
+        v-else
+        class="wizard-content"
+      >
         <component
-        :isView="!isView"
           :is="item.component"
           v-for="(item, index) in currentStep"
           :ref="item.component"
           :key="index"
-          :prjData="prjData"
+          :is-view="!isView"
+          :prj-data="prjData"
         />
       </div>
     </div>
     <div class="footer">
-        <el-button 
-          v-for="(item, index) in footerButtons" 
-            :key="index"
-            :type="item.type"
-            :disabled="item.disabled"
-            @click="buttonKey(item.key)"
-          >{{ item.name }}</el-button>
+      <el-button
+        v-for="(item, index) in footerButtons"
+        :key="index"
+        :type="item.type"
+        :disabled="item.disabled"
+        @click="buttonKey(item.key)"
+      >
+        {{ item.name }}
+      </el-button>
     </div>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
+import { IncsParam } from './wizardInterface'
 import { mockData, conversion } from './mockData'
 import { ajaxData, moduleData } from './ajaxData'
 interface SaveCallback {
-    status: string;
+    status: Boolean;
     message: string;
 }
 @Component({
   name: 'wizard'
 })
-export default class extends Vue {
+export default class wizard extends Vue {
   protected footerButtons: Array<any> = [
     {
-        key: 'prevBtn',
-        name: '上一步',
-        type: 'primary',
-        disabled: false
+      key: 'prevBtn',
+      name: '上一步',
+      type: 'primary',
+      disabled: false
     },
     {
-        key: 'nextBtn',
-        name: '下一步',
-        type: 'primary',
-        disabled: false
+      key: 'nextBtn',
+      name: '下一步',
+      type: 'primary',
+      disabled: false
     },
     {
-        key: 'saveBtn',
-        name: '保存',
-        type: 'primary',
-        disabled: false
+      key: 'saveBtn',
+      name: '保存',
+      type: 'primary',
+      disabled: false
     },
     {
-        key: 'finishBtn',
-        name: '完成',
-        type: 'success',
-        disabled: true
+      key: 'finishBtn',
+      name: '完成',
+      type: 'success',
+      disabled: true
     },
     {
-        key: 'closeBtn',
-        name: '关闭',
-        type: 'plain',
-        disabled: false
-    },
+      key: 'closeBtn',
+      name: '关闭',
+      type: 'plain',
+      disabled: false
+    }
   ];
   /**
    * 当前项目数据
@@ -165,7 +174,7 @@ export default class extends Vue {
    */
   protected temporaryKey: string = '';
 
-  /** 
+  /**
    * 通览模式
    * (同时子向导不可编辑状态 isCanEdit)
    */
@@ -177,8 +186,7 @@ export default class extends Vue {
   created() {
     // 传入假数据
     this.initData(ajaxData)
-    console.log('moduleData', moduleData)
-  };
+  }
   /**
    * 点击button
    * @param key
@@ -186,15 +194,12 @@ export default class extends Vue {
   buttonKey(key: string) {
     switch (key) {
       case 'prevBtn':
-        console.log('上一步', key);
-        this.doPrev();
-        break;
+        this.doPrev()
+        break
       case 'nextBtn':
-        console.log('下一步', key);
         this.doNext()
-        break;
+        break
       case 'saveBtn':
-        console.log('保存', key);
         this.isSave = true
         // 触发保存
         // this.$message({
@@ -202,21 +207,19 @@ export default class extends Vue {
         //   type: 'success'
         // })
         // this.$emit('closeParent', key)
-        break;
+        break
       case 'closeBtn':
-        console.log('关闭', key);
         this.$emit('closeParent', key)
-        break;
+        break
       case 'finishBtn':
-        console.log('完成', key);
         this.$emit('closeParent', key)
-        break;
+        break
     }
   }
   /**
      * 初始化
      */
-  protected initData(param: any) {
+  protected initData(param: IncsParam) {
     try {
       if (!param.data) {
         throw new Error('data数据不存在')
@@ -366,12 +369,10 @@ export default class extends Vue {
     } else { // 触发保存机制：步骤已存在，下一步骤与当前并不相同，且在module存在
       // 走保存接口
       this.currentStep.map((item: any) => {
-        console.log('item', item)
         if (item.component === 'PmBaseWizardPreviewPro') { // 通览模式
           this.doShowStep(key)
           return
         }
-        console.log('currentStepKey', this.currentStepKey)
         if (item.id === this.currentStepKey) {
         // 同时也可 根据传入的数据param或者currentStep 进行多重判断是否需要保存 此处暂不处理
           this.isSave = true
@@ -387,10 +388,6 @@ export default class extends Vue {
    * @param saveStatus
    */
   sucSave(param: SaveCallback) {
-    console.log(param.message)
-    console.log(!param.message)
-    console.log(!!param.message)
-
     this.isSave = false // 保存方法已走
 
     if (param.status) { // 保存成功
@@ -404,7 +401,6 @@ export default class extends Vue {
       })
     }
     if (!param.status && !!param.message) { // 保存失败需要提示
-      console.log(param)
       this.$message({
         message: param.message,
         type: 'warning'
@@ -423,43 +419,48 @@ export default class extends Vue {
     }
     // 显示或隐藏按钮
     // 显示影藏对应的按钮
-    console.log('是否为最后一个步骤', this.isLastStep(key))
     if (this.isLastStep(key)) {
-      this.footerButtons.map((item: any) =>{
-          if (item.key === 'nextBtn') {
-            item.disabled = true
-          }
-          this.allFinished = true;
+      this.footerButtons.map((item: any) => {
+        if (item.key === 'nextBtn') {
+          item.disabled = true
+        }
+        this.allFinished = true
       })
     } else {
-      this.footerButtons.map((item: any) =>{
-          if (item.key === 'nextBtn') {
-            item.disabled = false
-          }
+      this.footerButtons.map((item: any) => {
+        if (item.key === 'nextBtn') {
+          item.disabled = false
+        }
       })
     }
 
     if (this.isFirstStep(key)) {
-      this.footerButtons.map((item: any) =>{
+      this.footerButtons.map((item: any) => {
         if (item.key === 'prevBtn') {
           item.disabled = true
         }
       })
     } else {
-        this.footerButtons.map((item: any) =>{
-          if (item.key === 'prevBtn') {
-            item.disabled = false
-          }
-        })
+      this.footerButtons.map((item: any) => {
+        if (item.key === 'prevBtn') {
+          item.disabled = false
+        }
+      })
     }
     if (this.allFinished) {
-        this.footerButtons.map((item: any) =>{
-          if (item.key === 'finishBtn') {
-            item.disabled = false
-          }
-        })
+      this.footerButtons.map((item: any) => {
+        if (item.key === 'finishBtn') {
+          item.disabled = false
+        }
+      })
+    } else {
+      this.footerButtons.map((item: any) => {
+        if (item.key === 'finishBtn') {
+          item.disabled = true
+        }
+      })
     }
-    
+
     // 切换步骤
     this.currentGroupKey = tab.group || tab.key
     this.currentStepKey = tab.key
@@ -485,68 +486,66 @@ export default class extends Vue {
           this.currentStep = [item]
           this.isView = false
         }
-        
       }
     })
-    console.log(this.currentStep[0].component)
   }
 
   /**
    * 保存当前步骤
    */
-  saveCurrentProgress() {};
+  saveCurrentProgress() {}
   /**
    * 点击上一步
    */
   protected doPrev() {
-    let prevTab = null;
+    let prevTab = null
     for (let tab of this.stepTabs) {
-        if (tab.children) {
-            for (let child of tab.children) {
-                if (child.key === this.currentStepKey) {
-                    if (prevTab) {
-                        this.goStep(prevTab.key);
-                    }
-                    return;
-                }
-                prevTab = child;
+      if (tab.children) {
+        for (let child of tab.children) {
+          if (child.key === this.currentStepKey) {
+            if (prevTab) {
+              this.goStep(prevTab.key)
             }
-        } else {
-            if (tab.key === this.currentStepKey) {
-                if (prevTab) {
-                    this.goStep(prevTab.key);
-                }
-                return;
-            }
-            prevTab = tab;
+            return
+          }
+          prevTab = child
         }
+      } else {
+        if (tab.key === this.currentStepKey) {
+          if (prevTab) {
+            this.goStep(prevTab.key)
+          }
+          return
+        }
+        prevTab = tab
+      }
     }
   }
   /**
    * 点击下一步骤
    */
   protected doNext() {
-    let flag = false;
+    let flag = false
     for (let tab of this.stepTabs) {
-        if (tab.children) {
-            for (let child of tab.children) {
-                if (flag) {
-                    this.goStep(child.key);
-                    return;
-                } else if (child.key === this.currentStepKey) {
-                    flag = true;
-                }
-            }
-        } else {
-            if (flag) {
-                this.goStep(tab.key);
-                return;
-            } else if (tab.key === this.currentStepKey) {
-                flag = true;
-            }
+      if (tab.children) {
+        for (let child of tab.children) {
+          if (flag) {
+            this.goStep(child.key)
+            return
+          } else if (child.key === this.currentStepKey) {
+            flag = true
+          }
         }
+      } else {
+        if (flag) {
+          this.goStep(tab.key)
+          return
+        } else if (tab.key === this.currentStepKey) {
+          flag = true
+        }
+      }
     }
-    }
+  }
 }
 </script>
 
@@ -568,12 +567,13 @@ export default class extends Vue {
     margin-top: 8%;
   }
   .wizard-content {
-    width: 75%;
+    width: 80%;
+    min-width: 500px;
   }
   .pm-base-wizard-sidebar {
     margin: 0 5px;
     padding: 0px 5px;
-    width: 25%;
+    width: 20%;
     min-width: 215px;
 
     ul.pm-base-wizard-steps {
