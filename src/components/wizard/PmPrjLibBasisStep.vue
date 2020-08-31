@@ -12,14 +12,15 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch, Prop, Mixins } from 'vue-property-decorator'
-import WizardStepVModel from '@/views/wizardDemo/WizardStepVModel'
+import { WizardStepVModel, registeredComponent } from '@/views/wizardDemo/WizardStepVModel'
 import Form from '@/components/from/formDemo.vue'
-@Component({
-  name: 'PmPrjLibBasisStep',
-  components: {
-    Form
-  }
-})
+// @Component({
+//   name: 'PmPrjLibBasisStep',
+//   components: {
+//     Form
+//   }
+// })
+@registeredComponent('PmPrjLibBasisStep', '@/components/wizard/PmPrjLibBasisStep')
 export default class extends Mixins(WizardStepVModel) {
   protected uiCode: string = 'special_funds_general_step_form';
   /**

@@ -12,7 +12,6 @@ export default class extends Vue {
 
   created() {
     // Listen for swUpdated event and display refresh notification as required.
-    console.log(this.showRefreshUI)
     document.addEventListener('swUpdated', this.showRefreshUI, { once: true })
     // Refresh all open app tabs when a new service worker is installed.
     navigator.serviceWorker.addEventListener('controllerchange', () => {

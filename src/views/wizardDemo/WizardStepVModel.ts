@@ -1,12 +1,42 @@
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 import { StepInfo, IStep } from './wizardInterface'
+function func(rootAddress: string) {
+  const requireComponent = require.context(
+    // 其组件目录的相对路径
+    rootAddress,
+    // 是否查询其子目录
+    true,
+    // 匹配基础组件文件名的正则表达式
+    /\.(vue|js)$/
+  )
+  requireComponent.keys().forEach(fileName => {
+    // 获取组件配置
+    const componentConfig = requireComponent(fileName)
+    // 获取组件的命名(可以根据自己项目的实际情况进行修改)
+    const componentName = fileName.replace(/^\.\//, '').replace(/\/index.vue$/, '')
+    // 全局注册组件
+    // console.log('componentName', componentName.replace('.vue', ''))
+    console.log('componentConfig', componentConfig)
+    Vue.component(
+      componentName.replace('.vue', ''),
+      // 如果这个组件选项是通过 `export default` 导出的，
+      // 那么就会优先使用 `.default`，否则回退到使用模块的根。
+      componentConfig.default || componentConfig
+    )
+  })
+  return true
+}
+function registeredComponent(componentName: string, rootAddress: string) {
+  return func(rootAddress)
+}
+
 /**
  * 向导类
  */
 @Component({
   name: 'WizardStepVModel'
 })
-export default class WizardStepVModel extends Vue implements IStep {
+class WizardStepVModel extends Vue implements IStep {
     moduleId!: string;
     /**
      * 步骤信息
@@ -59,4 +89,8 @@ export default class WizardStepVModel extends Vue implements IStep {
       }
       this.$emit('sucSave', param)
     }
+}
+export {
+  WizardStepVModel,
+  registeredComponent
 }

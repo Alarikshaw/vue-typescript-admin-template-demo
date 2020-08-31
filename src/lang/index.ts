@@ -45,7 +45,6 @@ export const getLocale = () => {
   const language = navigator.language
   const locales = Object.keys(messages)
   for (const locale of locales) {
-    console.log('language', language)
     if (!language) {
       return locale
     }
