@@ -9,7 +9,7 @@
 </template>
 <script lang="ts">
 import { Component, Vue, Watch, Prop, Mixins } from 'vue-property-decorator'
-import WizardStepVModel from '@/views/wizardDemo/WizardStepVModel'
+import { WizardStepVModel } from '@/views/wizardDemo/WizardStepVModel'
 @Component({
   name: 'PmPrjLibBasisStep'
 })
